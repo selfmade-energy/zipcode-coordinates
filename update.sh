@@ -20,4 +20,4 @@ git add zipcode_coordinates/data/*.py version
 
 git commit -m "Update zip code coordinates to $VERSION"
 git tag --annotate --message="Release $VERSION" $VERSION
-git push origin HEAD:master $VERSION
+git push origin HEAD:main $VERSION
