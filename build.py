@@ -18,7 +18,7 @@ with z.open("DE.txt") as f:
         row = line.decode("utf-8").strip().split("\t")
         data[row[1]] = (row[9], row[10])
 
-version = datetime.now().strftime("%Y%m%d")
+version = datetime.now().strftime("%Y%m%d%H%M%S")
 with open("./version", "w") as f:
     f.write(version)
 
