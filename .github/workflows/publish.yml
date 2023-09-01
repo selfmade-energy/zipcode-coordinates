@@ -1,0 +1,50 @@
+name: zipcoode_coordinates build
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+  schedule:
+    - cron: "33 3 * * *"
+
+jobs:
+  update:
+    name: Update from Geonames
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Update coordinates from Geonames
+        run: ./update.sh
+
+  publish:
+    name: Publish to PyPI
+    runs-on: ubuntu-latest
+
+    needs: update
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+      - name: Install dependencies
+        run: |
+          sudo apt install -y jq curl
+          pip install wheel build twine
+      - name: Check versions
+        id: get
+        run: |
+          set -ex
+          echo "pkgver=`curl -s https://pypi.org/pypi/zipcode-coordinates/json | jq -r .info.version || echo none`" >> $GITHUB_OUTPUT
+          echo "newver=`python -c "from zipcode_coordinates import __version__; print(__version__)"`" >> $GITHUB_OUTPUT
+      - name: Build a binary wheel and a source tarball
+        run: |
+          python -m build
+      - name: Publish to PyPI
+        if: steps.get.outputs.pkgver != steps.get.outputs.newver && github.ref == 'refs/heads/main'
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          user: ${{ secrets.PYPI_USER }}
+          password: ${{ secrets.PYPI_PASSWORD }}

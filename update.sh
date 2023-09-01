@@ -2,21 +2,21 @@
 
 set -eux -o pipefail
 
-./build.py
+./fetch-data.py
 
 if [ -z "$(git diff --exit-code zipcode_coordinates/data/DE.py)" ]; then
     echo "No changes to the output on this push; exiting."
     exit 0
 fi
 
-export VERSION=$(cat version)
+export VERSION=$(python -c "from zipcode_coordinates import __version__; print(__version__)")
 
 export GIT_AUTHOR_NAME="Github update bot"
 export GIT_AUTHOR_EMAIL="git@github.com"
 export GIT_COMMITTER_NAME=$GIT_AUTHOR_NAME
 export GIT_COMMITTER_EMAIL=$GIT_AUTHOR_EMAIL
 
-git add zipcode_coordinates/data/*.py version
+git add zipcode_coordinates/data/*.py zipcode_coordinates/__init__.py
 
 git commit -m "Update zip code coordinates to $VERSION"
 git tag --annotate --message="Release $VERSION" $VERSION

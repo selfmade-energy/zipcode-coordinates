@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "zipcode-coordinates"
+dynamic = ["version"]
+
+authors = [
+  { name="Philipp Bosch", email="hello@pb.io" },
+]
+description = "Automatically updated map of German zip codes (PLZ) and corresponding geo coordinates."
+readme = "README.md"
+requires-python = ">=3.7"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/selfmade-energy/zipcode-coordinates"
+"Bug Tracker" = "https://github.com/selfmade-energy/zipcode-coordinates/issues"
+
+[tool.setuptools.dynamic]
+version = {attr = "zipcode_coordinates.__version__"}
