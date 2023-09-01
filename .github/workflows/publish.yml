@@ -47,6 +47,9 @@ jobs:
       - name: Build a binary wheel and a source tarball
         run: |
           python -m build
+      - name: Debug
+        run: |
+          echo ${{ steps.get.outputs.pkgver }} ${{ steps.get.outputs.newver }}
       - name: Publish to PyPI
         if: steps.get.outputs.pkgver != steps.get.outputs.newver && github.ref == 'refs/heads/main'
         uses: pypa/gh-action-pypi-publish@release/v1
