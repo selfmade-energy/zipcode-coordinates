@@ -33,8 +33,7 @@ for isocode in ["DE", "AT", "CH"]:
         f.seek(0)
         for line in f.readlines():
             row = line.decode("utf-8").strip().split("\t")
-            data[row[1]] = (row[9], row[10])
-        print(data)
+            data[row[1]] = (float(row[9]), float(row[10]))
 
     with open(hash_file_name, "w") as f:
         f.write(new_hash)
@@ -48,7 +47,7 @@ if create_new_version:
     now = datetime.now()
     version = "{}.{}".format(now.strftime("%Y%m%d"), (now.hour * 60 + now.minute))
     print(f"New version: {version}")
-    with open("./zipcode_coordinates/__init__.py", "w") as f:
-        f.write(f'__version__ = "{version}"\n')
+    with open("./zipcode_coordinates/version.py", "w") as f:
+        f.write(f'last_update = "{version}"\n')
 else:
     print("Data has not changed, no new version")
