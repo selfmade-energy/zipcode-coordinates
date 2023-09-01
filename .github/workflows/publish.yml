@@ -20,6 +20,11 @@ jobs:
   publish:
     name: Publish to PyPI
     runs-on: ubuntu-latest
+    environment:
+      name: pypi
+      url: https://pypi.org/p/zipcode-coordinates
+    permissions:
+      id-token: write
 
     needs: update
 
@@ -45,6 +50,3 @@ jobs:
       - name: Publish to PyPI
         if: steps.get.outputs.pkgver != steps.get.outputs.newver && github.ref == 'refs/heads/main'
         uses: pypa/gh-action-pypi-publish@release/v1
-        with:
-          user: ${{ secrets.PYPI_USER }}
-          password: ${{ secrets.PYPI_PASSWORD }}
