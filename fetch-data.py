@@ -2,52 +2,53 @@
 
 from datetime import datetime
 from hashlib import md5
-import io
 import os.path
-import urllib.request
-import zipfile
+import sys
+
+import requests
 
 
 target_dir = os.path.abspath("./zipcode_coordinates/data")
-create_new_version = False
 
-# fetch latest zip code coordinates from geonames.org
-for isocode in ["DE", "AT", "CH"]:
-    print(isocode, end=" › ")
-    r = urllib.request.urlopen(f"http://download.geonames.org/export/zip/{isocode}.zip")
-    assert r.status == 200
-    z = zipfile.ZipFile(io.BytesIO(r.read()))
-    data = {}
-    hash_file_name = os.path.join(target_dir, f"{isocode}.md5")
-    old_hash = open(hash_file_name).read().strip()
+# fetch latest zip code coordinates
+coordinates = {}
+limit = 100
+offset = 0
+while True:
+    print(f"› Fetching records {offset+1} to {offset+limit}")
+    url = f"https://public.opendatasoft.com/api/explore/v2.1/catalog/datasets/georef-germany-postleitzahl/records?select=plz_code%2Cgeo_point_2d&limit={limit}&offset={offset}"
+    r = requests.get(url)
+    assert r.status_code == 200
+    data = r.json()
+    for row in data["results"]:
+        coordinates[row["plz_code"]] = (
+            row["geo_point_2d"]["lat"],
+            row["geo_point_2d"]["lon"],
+        )
+    if len(data["results"]) < limit:
+        break
+    offset += limit
 
-    with z.open(f"{isocode}.txt") as f:
-        contents = f.read()
-        new_hash = md5(contents).hexdigest()
-        if new_hash == old_hash:
-            print("No new data")
-            continue
+# compare previeous hash with new hash
+hash_file_name = os.path.join(target_dir, "de.md5")
+previous_hash = open(hash_file_name).read().strip()
+new_hash = md5(r.content).hexdigest()
+if new_hash == previous_hash:
+    print("No new data")
+    sys.exit(0)
+print("New data available")
 
-        print("New data available")
+# write new hash
+with open(hash_file_name, "w") as f:
+    f.write(new_hash)
 
-        f.seek(0)
-        for line in f.readlines():
-            row = line.decode("utf-8").strip().split("\t")
-            data[row[1]] = (float(row[9]), float(row[10]))
+# write new data
+with open(os.path.join(target_dir, f"de.py"), "w") as f:
+    f.write("coordinates = %s\n" % (coordinates,))
 
-    with open(hash_file_name, "w") as f:
-        f.write(new_hash)
-
-    with open(os.path.join(target_dir, f"{isocode}.py"), "w") as f:
-        f.write("coordinates = %s\n" % (data,))
-
-    create_new_version = True
-
-if create_new_version:
-    now = datetime.now()
-    version = "{}.{}".format(now.strftime("%Y%m%d"), (now.hour * 60 + now.minute))
-    print(f"New version: {version}")
-    with open("./zipcode_coordinates/version.py", "w") as f:
-        f.write(f'last_update = "{version}"\n')
-else:
-    print("Data has not changed, no new version")
+# write new version
+now = datetime.now()
+version = "{}.{}".format(now.strftime("%Y%m%d"), (now.hour * 60 + now.minute))
+print(f"New version: {version}")
+with open("./zipcode_coordinates/version.py", "w") as f:
+    f.write(f'last_update = "{version}"\n')
