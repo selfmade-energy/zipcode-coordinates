@@ -16,7 +16,7 @@ export GIT_AUTHOR_EMAIL="git@github.com"
 export GIT_COMMITTER_NAME=$GIT_AUTHOR_NAME
 export GIT_COMMITTER_EMAIL=$GIT_AUTHOR_EMAIL
 
-git add zipcode_coordinates/data/*.{py,md5}  zipcode_coordinates/__init__.py
+git add zipcode_coordinates/data/*.{py,md5} zipcode_coordinates/__init__.py zipcode_coordinates/version.py
 
 git commit -m "Update zip code coordinates to $VERSION"
 git tag --annotate --message="Release $VERSION" $VERSION
