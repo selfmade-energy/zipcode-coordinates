@@ -4,7 +4,7 @@ from .exceptions import ZipCodeNotFound, CountryCodeNotFound
 from .version import last_update
 
 
-__version__ = f"0.1.0.{last_update}"
+__version__ = f"0.1.1.{last_update}"
 
 
 def get_coordinates_for_zipcode(zipcode, country_code="DE"):

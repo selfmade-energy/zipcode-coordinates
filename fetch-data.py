@@ -16,7 +16,7 @@ limit = 100
 offset = 0
 while True:
     print(f"› Fetching records {offset+1} to {offset+limit}")
-    url = f"https://public.opendatasoft.com/api/explore/v2.1/catalog/datasets/georef-germany-postleitzahl/records?select=plz_code%2Cgeo_point_2d&limit={limit}&offset={offset}"
+    url = f"https://public.opendatasoft.com/api/explore/v2.1/catalog/datasets/georef-germany-postleitzahl/records?select=plz_code%2Cgeo_point_2d&limit={limit}&offset={offset}"  # noqa: E501
     r = requests.get(url)
     assert r.status_code == 200
     data = r.json()
@@ -29,7 +29,7 @@ while True:
         break
     offset += limit
 
-# compare previeous hash with new hash
+# compare previous hash with new hash
 hash_file_name = os.path.join(target_dir, "de.md5")
 previous_hash = open(hash_file_name).read().strip()
 new_hash = md5(r.content).hexdigest()
@@ -43,12 +43,12 @@ with open(hash_file_name, "w") as f:
     f.write(new_hash)
 
 # write new data
-with open(os.path.join(target_dir, f"de.py"), "w") as f:
+with open(os.path.join(target_dir, "de.py"), "w") as f:
     f.write("coordinates = %s\n" % (coordinates,))
 
 # write new version
 now = datetime.now()
-version = "{}.{}".format(now.strftime("%Y%m%d"), (now.hour * 60 + now.minute))
+version = now.strftime("%Y%m%d")
 print(f"New version: {version}")
 with open("./zipcode_coordinates/version.py", "w") as f:
     f.write(f'last_update = "{version}"\n')
