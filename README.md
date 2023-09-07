@@ -1,6 +1,6 @@
 # Automatically updated map of German zip codes and corresponding geo coordinates
 
-The `zipcode_coordinates` module provides a map of German zip codes and their corresponding geo coordinates taken from [this dataset]. The package is automatically updated daily.
+The `zipcode_coordinates` module provides a map of German zip codes and their corresponding geo coordinates taken from [this dataset]. The package is automatically updated.
 
 Available on [PyPI].
 
